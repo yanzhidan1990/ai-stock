@@ -74,11 +74,11 @@ export default function StockSearch() {
 
       {open && results.length > 0 && (
         <div className="absolute top-full z-50 mt-1 max-h-64 w-full overflow-y-auto rounded-md border border-zinc-800 bg-zinc-950 p-1 shadow-xl">
-          {results.map((stock) => {
+          {results.map((stock, index) => {
             const added = isAdded(stock.fullCode);
             return (
               <div
-                key={stock.fullCode}
+                key={`${stock.fullCode}-${index}`}
                 className="flex items-center justify-between rounded-sm px-2 py-1.5 text-xs hover:bg-zinc-800/50 cursor-pointer"
                 onClick={() => !added && handleAdd(stock)}
               >
