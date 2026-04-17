@@ -9,7 +9,9 @@ export async function searchStocks(keyword: string): Promise<StockInfo[]> {
   if (!keyword) return [];
   try {
     const res = await fetch(`/api/suggest/?v=2&q=${encodeURIComponent(keyword)}&t=all`);
-    const text = await res.text();
+    const buffer = await res.arrayBuffer();
+    const decoder = new TextDecoder('gbk');
+    const text = decoder.decode(buffer);
     // format: v_hint="sz000001^平安银行^PAYH^...~sh601318^中国平安^ZGPA^...";
     const match = text.match(/v_hint="([^"]*)"/);
     if (!match || !match[1]) return [];
@@ -32,17 +34,29 @@ export async function searchStocks(keyword: string): Promise<StockInfo[]> {
 export async function getQuotes(fullCodes: string[]) {
   if (!fullCodes.length) return [];
   try {
-    const q = fullCodes.join(',');
+    // Tencent API uses 'r_hk' instead of 'hk', 'r_us' instead of 'us' for quotes
+    // However, some markets don't need 'r_', standard prefix: sh, sz, hk, us
+    const q = fullCodes.map(code => {
+      // Just pass as is, Tencent API usually handles prefix properly
+      return code;
+    }).join(',');
+    
     const res = await fetch(`/api/quote/?q=${q}`);
-    const text = await res.text();
+    const buffer = await res.arrayBuffer();
+    const decoder = new TextDecoder('gbk');
+    const text = decoder.decode(buffer);
     // format: v_sz000001="1~平安银行~000001~11.51~11.60...;
     
     const items = text.split(';').map(s => s.trim()).filter(Boolean);
     return items.map(item => {
       const match = item.match(/v_(.*?)="(.*)"/);
       if (!match) return null;
-      const fullCode = match[1];
+      
+      const fullCode = match[1]; // might have s_ prefix
       const parts = match[2].split('~');
+      
+      // If parts length is too small, it's an invalid code or error
+      if (parts.length < 3) return null;
       
       // indices based on tencent api
       const name = parts[1];
@@ -54,8 +68,11 @@ export async function getQuotes(fullCodes: string[]) {
       const volumeRatio = parseFloat(parts[45]) || 0;
       const volumeMoney = parseFloat(parts[37]) || 0; // 万
       
+      // Map back to original requested code if needed (e.g. if it returned s_sh600000)
+      const mappedCode = fullCode.replace(/^s_/, '');
+      
       return {
-        fullCode,
+        fullCode: mappedCode,
         name,
         price,
         changeAmt,
