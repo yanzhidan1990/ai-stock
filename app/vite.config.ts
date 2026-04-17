@@ -11,12 +11,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/suggest': {
-        target: 'http://smartbox.gtimg.cn',
+        target: 'https://smartbox.gtimg.cn',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/suggest/, '/s3/')
       },
       '/api/quote': {
-        target: 'http://qt.gtimg.cn',
+        target: 'https://qt.gtimg.cn',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/quote/, '/')
       }
