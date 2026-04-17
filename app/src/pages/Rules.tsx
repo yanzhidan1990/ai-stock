@@ -216,12 +216,8 @@ export default function Rules() {
 
                   <div className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-400">
                     <div className="flex items-center gap-2">
-                      <Tag tone="INFO">模拟字段</Tag>
-                      <span>概念：data.metrics.changePct / limitUpCount / failRate / moneyInflow</span>
-                    </div>
-                    <div className="mt-1 flex items-center gap-2">
-                      <Tag tone="INFO">模拟字段</Tag>
-                      <span>个股：data.metrics.changePct / volumeRatio / relStrengthConcept / pullbackPct</span>
+                      <Tag tone="INFO">真实行情</Tag>
+                      <span>支持字段：data.metrics.changePct / price / volumeRatio / turnoverRate / amplitude / volumeMoney</span>
                     </div>
                   </div>
                 </>

@@ -8,6 +8,20 @@ export default defineConfig({
   build: {
     sourcemap: 'hidden',
   },
+  server: {
+    proxy: {
+      '/api/suggest': {
+        target: 'http://smartbox.gtimg.cn',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/suggest/, '/s3/')
+      },
+      '/api/quote': {
+        target: 'http://qt.gtimg.cn',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/quote/, '/')
+      }
+    }
+  },
   plugins: [
     react({
       babel: {
